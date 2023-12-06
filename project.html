@@ -1,1 +1,58 @@
-alert("hello");
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Parking Status</title>
+    <!-- Your existing styles and scripts go here -->
+</head>
+<body>
+    <div class="header">
+        <img class="logo" src="https://img.freepik.com/premium-vector/parking-car-logo-template-design_20029-1033.jpg" alt="Logo">
+        <h1>Parking Slot Availability</h1>
+    </div>
+    
+    <div class="availability">
+        <h2>HISHTNAGRI PARKING: <span id="citySlots">0</span></h2>
+        <h2>SADAR BAZAR PARKING: <span id="downtownSlots">0</span></h2>
+    </div>
+    
+    <div id="map" style="width: 80%; height: 500px; margin: 50px auto;"></div>
+
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script>
+        // Your existing JavaScript code for updating slots and map goes here
+
+        // For example, you might have a function like updateSlots()
+        // Update slots every 1 second
+        setInterval(updateSlots, 1000);
+
+        function updateSlots() {
+            // Your existing code to update slots goes here
+
+            // For demonstration purposes, update the displayed slots in the HTML
+            document.getElementById('citySlots').innerText = cityParkingSlots;
+            document.getElementById('downtownSlots').innerText = downtownParkingSlots;
+        }
+    </script>
+</body>
+</html>
+
+<?php
+// Receive parking data from ESP32
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $data = file_get_contents('php://input');
+    $decodedData = json_decode($data, true);
+
+    // Process the data as needed
+    $cityParking = $decodedData['cityParking'];
+    $downtownParking = $decodedData['downtownParking'];
+
+    // You can store the data in a database or perform any other actions here
+    // For now, just printing the received data
+    echo "Received Data: City Parking - $cityParking, Downtown Parking - $downtownParking";
+} else {
+    // Handle other HTTP methods or display your website content
+    // ...
+}
+?>
