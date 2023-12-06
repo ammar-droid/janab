@@ -1,58 +1,79 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Your Parking Status</title>
-    <!-- Your existing styles and scripts go here -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      background-image: url('https://wallpapercave.com/wp/wp8106531.jpg');
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+    }
+    .header {
+      background-color: #333;
+      color: white;
+      text-align: center;
+      padding: 20px;
+    }
+    .logo {
+      width: 100px;
+      height: auto;
+    }
+    .availability {
+      text-align: center;
+      font-family: Arial, sans-serif;
+    }
+  </style>
+  <script>
+    function updateCitySlots() {
+      var xhttp = new XMLHttpRequest();
+      xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+          document.getElementById('citySlots').innerHTML = this.responseText;
+        }
+      };
+      xhttp.open('GET', '/getCitySlots', true);
+      xhttp.send();
+    }
+
+    function updateDowntownSlots() {
+      var xhttp = new XMLHttpRequest();
+      xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+          document.getElementById('downtownSlots').innerHTML = this.responseText;
+        }
+      };
+      xhttp.open('GET', '/getDowntownSlots', true);
+      xhttp.send();
+    }
+
+    setInterval(updateCitySlots, 1000); // Update City parking every 1 second
+    setInterval(updateDowntownSlots, 1000); // Update Downtown parking every 1 second
+  </script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
 </head>
 <body>
-    <div class="header">
-        <img class="logo" src="https://img.freepik.com/premium-vector/parking-car-logo-template-design_20029-1033.jpg" alt="Logo">
-        <h1>Parking Slot Availability</h1>
-    </div>
-    
-    <div class="availability">
-        <h2>HISHTNAGRI PARKING: <span id="citySlots">0</span></h2>
-        <h2>SADAR BAZAR PARKING: <span id="downtownSlots">0</span></h2>
-    </div>
-    
-    <div id="map" style="width: 80%; height: 500px; margin: 50px auto;"></div>
-
-    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-    <script>
-        // Your existing JavaScript code for updating slots and map goes here
-
-        // For example, you might have a function like updateSlots()
-        // Update slots every 1 second
-        setInterval(updateSlots, 1000);
-
-        function updateSlots() {
-            // Your existing code to update slots goes here
-
-            // For demonstration purposes, update the displayed slots in the HTML
-            document.getElementById('citySlots').innerText = cityParkingSlots;
-            document.getElementById('downtownSlots').innerText = downtownParkingSlots;
-        }
-    </script>
+  <div class="header">
+    <img class="logo" src="https://img.freepik.com/premium-vector/parking-car-logo-template-design_20029-1033.jpg" alt="Logo">
+    <h1>Parking Slot Availability</h1>
+  </div>
+  <div class="availability">
+    <h2>HISHTNAGRI PARKING: <span id="citySlots">0</span></h2>
+    <h2>SADAR BAZAR PARKING: <span id="downtownSlots">0</span></h2>
+  </div>
+  
+  <div id="map" style="width: 80%; height: 500px; margin: 50px auto;"></div>
+  <script>
+    var map = L.map('map').setView([34.013409425566145, 71.5790118408275], 15);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+  
+    L.marker([34.013409425566145, 71.5790118408275]).addTo(map).bindPopup('HASHTNAGRI Parking');
+    L.marker([33.99844524182437, 71.53907922374607]).addTo(map).bindPopup('SADAR Parking');
+  </script>
 </body>
 </html>
-
-<?php
-// Receive parking data from ESP32
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $data = file_get_contents('php://input');
-    $decodedData = json_decode($data, true);
-
-    // Process the data as needed
-    $cityParking = $decodedData['cityParking'];
-    $downtownParking = $decodedData['downtownParking'];
-
-    // You can store the data in a database or perform any other actions here
-    // For now, just printing the received data
-    echo "Received Data: City Parking - $cityParking, Downtown Parking - $downtownParking";
-} else {
-    // Handle other HTTP methods or display your website content
-    // ...
-}
-?>
